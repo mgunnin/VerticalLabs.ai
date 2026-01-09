@@ -19,6 +19,7 @@ import StrategicDiagnostics from './components/StrategicDiagnostics';
 import Team from './components/Team';
 import ClosingSequence from './components/ClosingSequence';
 import SeoAgent from './components/SeoAgent';
+import BrandLogo from './components/BrandLogo';
 import { ProjectItem, BlogPost } from './types';
 
 type ViewState = 'home' | 'resources' | 'blog' | 'blog-post';
@@ -132,7 +133,7 @@ const App: React.FC = () => {
         ${isScrolled ? 'py-4 bg-black/80 backdrop-blur-md border-b border-white/5' : 'py-6 mix-blend-difference'}
       `}>
         <div className="cursor-pointer group" onClick={() => handleNavigate('hero')}>
-          <span className="font-display font-bold text-xl tracking-tighter text-white drop-shadow-[0_0_3px_rgba(0,0,0,0.5)] group-hover:text-neon-blue transition-colors">VERTICAL LABS</span>
+          <BrandLogo className="h-8 w-auto text-white drop-shadow-[0_0_8px_rgba(189,0,255,0.3)] group-hover:text-neon-purple transition-all duration-300" />
         </div>
         
         <div className="hidden md:flex gap-8 lg:gap-12">

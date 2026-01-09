@@ -1,8 +1,26 @@
 
 import { GoogleGenAI } from "@google/genai";
 
-// Initialize the client
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+// Lazy initialization to prevent top-level execution errors (like storage access)
+let ai: GoogleGenAI | null = null;
+
+const getAiClient = () => {
+  if (!ai) {
+    try {
+      // Safely check for the key
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (apiKey) {
+        ai = new GoogleGenAI({ apiKey });
+      } else {
+        console.warn("GEMINI_API_KEY not found in environment variables.");
+      }
+    } catch (error) {
+      // Catch storage access errors or other initialization failures
+      console.error("Failed to initialize Gemini Client:", error);
+    }
+  }
+  return ai;
+};
 
 const SYSTEM_INSTRUCTION = `
 You are "Vertical Core", the autonomous Technical Scoper for Vertical Labs.
@@ -57,7 +75,17 @@ export const generateChatResponse = async (
   newMessage: string
 ): Promise<{ text: string; hasAction: boolean }> => {
   try {
-    const chat = ai.chats.create({
+    const client = getAiClient();
+    
+    if (!client) {
+        // Graceful fallback if client fails to init
+        return { 
+            text: "VERTICAL_CORE CONNECTION FAILED. Environment variable GEMINI_API_KEY is missing or storage access is blocked. Please contact admin.", 
+            hasAction: false 
+        };
+    }
+
+    const chat = client.chats.create({
       model: 'gemini-2.5-flash',
       config: {
         systemInstruction: SYSTEM_INSTRUCTION,
