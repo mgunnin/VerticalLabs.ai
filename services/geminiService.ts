@@ -1,7 +1,8 @@
+
 import { GoogleGenAI } from "@google/genai";
 
 // Initialize the client
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 const SYSTEM_INSTRUCTION = `
 You are "Vertical Core", the autonomous Technical Scoper for Vertical Labs.
