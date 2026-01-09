@@ -3,9 +3,36 @@
 <html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="/assets/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230a0a0a'/%3E%3Cpath d='M30 30 L50 75 L70 30' stroke='%23bd00ff' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='50' cy='75' r='4' fill='%2300f3ff'/%3E%3C/svg%3E" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vertical Labs | The Future of AI</title>
+    
+    <!-- Critical Safety Script: Handle restricted storage access -->
+    <script>
+      try {
+        // Test storage access
+        const x = '__storage_test__';
+        window.localStorage.setItem(x, x);
+        window.localStorage.removeItem(x);
+      } catch (e) {
+        console.warn('Storage access blocked. Polyfilling to prevent crash.');
+        const noopStorage = {
+          getItem: () => null,
+          setItem: () => {},
+          removeItem: () => {},
+          clear: () => {},
+          length: 0,
+          key: () => null,
+        };
+        try {
+          Object.defineProperty(window, 'localStorage', { value: noopStorage });
+          Object.defineProperty(window, 'sessionStorage', { value: noopStorage });
+        } catch (err) {
+            console.error('Failed to polyfill storage', err);
+        }
+      }
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

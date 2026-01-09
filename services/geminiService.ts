@@ -1,26 +1,8 @@
 
-import { GoogleGenAI } from "@google/genai";
+import type { GoogleGenAI } from "@google/genai";
 
-// Lazy initialization to prevent top-level execution errors (like storage access)
-let ai: GoogleGenAI | null = null;
-
-const getAiClient = () => {
-  if (!ai) {
-    try {
-      // Safely check for the key
-      const apiKey = process.env.GEMINI_API_KEY;
-      if (apiKey) {
-        ai = new GoogleGenAI({ apiKey });
-      } else {
-        console.warn("GEMINI_API_KEY not found in environment variables.");
-      }
-    } catch (error) {
-      // Catch storage access errors or other initialization failures
-      console.error("Failed to initialize Gemini Client:", error);
-    }
-  }
-  return ai;
-};
+// Store client instance in module scope
+let aiClient: GoogleGenAI | null = null;
 
 const SYSTEM_INSTRUCTION = `
 You are "Vertical Core", the autonomous Technical Scoper for Vertical Labs.
@@ -75,17 +57,24 @@ export const generateChatResponse = async (
   newMessage: string
 ): Promise<{ text: string; hasAction: boolean }> => {
   try {
-    const client = getAiClient();
-    
-    if (!client) {
-        // Graceful fallback if client fails to init
-        return { 
-            text: "VERTICAL_CORE CONNECTION FAILED. Environment variable GEMINI_API_KEY is missing or storage access is blocked. Please contact admin.", 
-            hasAction: false 
-        };
+    // DYNAMIC IMPORT: Only load the SDK when needed to prevent load-time storage access errors
+    if (!aiClient) {
+        const { GoogleGenAI } = await import("@google/genai");
+        
+        // Support both standard env var and the specific one in your project
+        const apiKey = process.env.API_KEY || process.env.GEMINI_API_KEY;
+        
+        if (!apiKey) {
+             console.error("Gemini API Key missing");
+             return { 
+                text: "VERTICAL_CORE CONNECTION FAILED. API Key not detected in environment variables.", 
+                hasAction: false 
+            };
+        }
+        aiClient = new GoogleGenAI({ apiKey });
     }
 
-    const chat = client.chats.create({
+    const chat = aiClient.chats.create({
       model: 'gemini-2.5-flash',
       config: {
         systemInstruction: SYSTEM_INSTRUCTION,
