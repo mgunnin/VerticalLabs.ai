@@ -6,6 +6,27 @@ import { ProjectItem } from '../types';
 
 export const projects: ProjectItem[] = [
   {
+    id: '5',
+    title: 'VANTAGE BID',
+    client: 'IBYTE',
+    year: '2026',
+    tags: ['BID_AUTOMATION', 'PROPOSAL_ENGINE', 'WIN_OPTIMIZATION'],
+    description: 'AI-powered bid discovery and automated proposal engineering. Designed to maximize win-potential for high-stakes contracts by eliminating manual back-office bottlenecks.',
+    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2672&auto=format&fit=crop',
+    stats: [
+        { label: 'GEN TIME', value: '-85%' },
+        { label: 'COMPLIANCE', value: '100%' },
+        { label: 'SCALE', value: 'UNLIMITED' }
+    ],
+    challenge: "Procurement teams are often buried in 500+ page RFPs with razor-thin deadlines. Manual drafting leads to human error, compliance risks, and missed opportunities.",
+    solution: "We deployed a custom logic layer to automate the full submission cycle: AI-Driven Bid Discovery, Automated Proposal Creation, Technical Pricing Strategy, and Compliance & Regulatory Verification.",
+    result: "Proposal generation time reduced by 85%. The system ensures 100% compliance accuracy, allowing the team to scale submission volume without increasing overhead.",
+    gallery: [
+        'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2670&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2670&auto=format&fit=crop'
+    ]
+  },
+  {
     id: '1',
     title: 'SEARCHEYE',
     client: 'SearchEye',
