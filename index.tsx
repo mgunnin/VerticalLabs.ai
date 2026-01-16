@@ -5,35 +5,49 @@ import App from './App';
 import posthog from 'posthog-js';
 
 // Initialize PostHog
-// Safely access environment variables to prevent runtime errors
-const getEnvVar = (key: string) => {
-    // 1. Try import.meta.env (Vite)
-    // We cast to any to avoid TS errors, and check existence to avoid runtime errors
-    const meta = (typeof import.meta !== 'undefined' ? import.meta : {}) as any;
-    if (meta && meta.env && meta.env[key]) {
-        return meta.env[key];
-    }
+// We use a try-catch block with explicit property access to ensure:
+// 1. Vite can statically analyze and replace 'import.meta.env.VITE_...' at build time.
+// 2. The app doesn't crash in environments where import.meta is undefined.
+
+let posthogKey: string | undefined = undefined;
+let posthogHost: string = 'https://us.i.posthog.com';
+
+try {
+    // Explicit static access is required for Vite's build-time replacement.
+    // We suppress TS errors because import.meta might not be typed in all contexts.
     
-    // 2. Try process.env (Standard/Webpack)
-    try {
-        if (typeof process !== 'undefined' && process.env && process.env[key]) {
-            return process.env[key];
-        }
-    } catch (e) {}
+    // @ts-ignore
+    const envKey = import.meta.env.VITE_PUBLIC_POSTHOG_KEY;
+    if (envKey) {
+        posthogKey = envKey;
+    }
 
-    return undefined;
-};
+    // @ts-ignore
+    const envHost = import.meta.env.VITE_PUBLIC_POSTHOG_HOST;
+    if (envHost) {
+        posthogHost = envHost;
+    }
+} catch (error) {
+    // Gracefully handle cases where import.meta is not available
+    console.debug("Vite env access error", error);
+}
 
-const posthogKey = getEnvVar('VITE_PUBLIC_POSTHOG_KEY');
-const posthogHost = getEnvVar('VITE_PUBLIC_POSTHOG_HOST') || 'https://us.i.posthog.com';
+// Fallback to process.env if available (for non-Vite builds or if variable wasn't replaced)
+if (!posthogKey && typeof process !== 'undefined' && process.env) {
+    posthogKey = process.env.VITE_PUBLIC_POSTHOG_KEY;
+    if (process.env.VITE_PUBLIC_POSTHOG_HOST) {
+        posthogHost = process.env.VITE_PUBLIC_POSTHOG_HOST;
+    }
+}
 
 if (posthogKey) {
     posthog.init(posthogKey, {
         api_host: posthogHost,
         person_profiles: 'identified_only',
+        capture_pageview: false, // Pageviews are handled manually in App.tsx
+        capture_pageleave: true,
     });
 } else {
-    // Graceful fallback or logging if key is missing in development
     console.debug("PostHog not initialized: VITE_PUBLIC_POSTHOG_KEY missing");
 }
 
