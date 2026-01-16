@@ -21,6 +21,7 @@ import ClosingSequence from './components/ClosingSequence';
 import SeoAgent from './components/SeoAgent';
 import BrandLogo from './components/BrandLogo';
 import { ProjectItem, BlogPost } from './types';
+import posthog from 'posthog-js';
 
 type ViewState = 'home' | 'resources' | 'blog' | 'blog-post';
 
@@ -32,6 +33,27 @@ const App: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [homeFooterOpen, setHomeFooterOpen] = useState(false);
   const [aiTranscript, setAiTranscript] = useState('');
+
+  // PostHog Virtual Pageview Tracking
+  useEffect(() => {
+    let url = window.location.origin;
+    if (view === 'resources') {
+      url += '/resources';
+    } else if (view === 'blog') {
+      url += '/blog';
+      if (selectedPost) {
+        url += `/${selectedPost.id}`;
+      }
+    } else if (selectedProject) {
+      url += `/work/${selectedProject.id}`;
+    } else {
+      url += '/';
+    }
+
+    posthog.capture('$pageview', {
+      $current_url: url
+    });
+  }, [view, selectedProject, selectedPost]);
 
   useEffect(() => {
     const handleScroll = () => {
