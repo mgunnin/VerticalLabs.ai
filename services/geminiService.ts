@@ -61,21 +61,12 @@ export const generateChatResponse = async (
     if (!aiClient) {
         const { GoogleGenAI } = await import("@google/genai");
         
-        // Support both standard env var and the specific one in your project
-        const apiKey = process.env.API_KEY || process.env.GEMINI_API_KEY;
-        
-        if (!apiKey) {
-             console.error("Gemini API Key missing");
-             return { 
-                text: "VERTICAL_CORE CONNECTION FAILED. API Key not detected in environment variables.", 
-                hasAction: false 
-            };
-        }
-        aiClient = new GoogleGenAI({ apiKey });
+        // Initialize with process.env.API_KEY as per strict guidelines
+        aiClient = new GoogleGenAI({ apiKey: process.env.API_KEY });
     }
 
     const chat = aiClient.chats.create({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3-flash-preview',
       config: {
         systemInstruction: SYSTEM_INSTRUCTION,
       },
